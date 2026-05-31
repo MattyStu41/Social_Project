@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Repurpose — JACK Social Scheduler</title>
+<link rel="stylesheet" href="/styles.css" />
+<link rel="stylesheet" href="/studio.css" />
+<link rel="icon" href="data:," />
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">J</span>
+      <span class="brand-text">JACK Repurpose</span>
+    </div>
+    <nav class="actions">
+      <a href="/" class="ghost" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);text-decoration:none;">Dashboard</a>
+      <a href="/studio" class="ghost" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);text-decoration:none;">Studio</a>
+      <button id="logout-btn" class="ghost" hidden>Sign out</button>
+    </nav>
+  </header>
+
+  <main class="main studio-main" hidden>
+    <section class="panel">
+      <h2>Long → short</h2>
+      <p class="muted">Paste a long-form passage (a Substack post, a newsletter draft) and JACK will produce per-platform candidates by greedy sentence-boundary packing. Deterministic — no AI invention, no silent truncation.</p>
+
+      <form id="repurpose-form" autocomplete="off">
+        <label class="field">
+          <span>Source text</span>
+          <textarea id="body" rows="10" required placeholder="Paste the long-form text here…"></textarea>
+        </label>
+
+        <fieldset class="field">
+          <legend>Target platforms</legend>
+          <div class="platforms-pick">
+            <label><input type="checkbox" name="platforms" value="threads" checked /> Threads</label>
+            <label><input type="checkbox" name="platforms" value="instagram" /> Instagram</label>
+            <label><input type="checkbox" name="platforms" value="tiktok" /> TikTok</label>
+          </div>
+        </fieldset>
+
+        <label class="field">
+          <span>Candidates per platform</span>
+          <input id="count" type="number" min="1" max="10" value="4" />
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="primary" id="submit-btn">Generate candidates</button>
+          <span id="form-error" class="error" role="alert"></span>
+        </div>
+      </form>
+    </section>
+
+    <section id="results-panel" class="panel" hidden>
+      <h2>Candidates</h2>
+      <p class="muted">Click <em>Open in Studio</em> to schedule any candidate. Hashtags that appear in your source body show up as suggestions.</p>
+      <div id="results"></div>
+    </section>
+  </main>
+
+  <div id="login" class="login" hidden>
+    <form id="login-form" class="login-card">
+      <h1>JACK Repurpose</h1>
+      <p class="muted">Sign in to repurpose.</p>
+      <input type="password" id="login-password" required autofocus />
+      <button type="submit" class="primary">Sign in</button>
+      <p id="login-error" class="error" role="alert"></p>
+    </form>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+</div>
+
+<script src="/repurpose.js" defer></script>
+</body>
+</html>

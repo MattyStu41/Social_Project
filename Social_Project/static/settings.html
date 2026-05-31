@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Settings — JACK Social Scheduler</title>
+<link rel="stylesheet" href="/styles.css" />
+<link rel="stylesheet" href="/studio.css" />
+<link rel="icon" href="data:," />
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">J</span><span class="brand-text">JACK Settings</span></div>
+    <nav class="actions">
+      <a href="/" class="ghost" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);text-decoration:none;">Dashboard</a>
+      <button id="logout-btn" class="ghost" hidden>Sign out</button>
+    </nav>
+  </header>
+
+  <main class="main studio-main" hidden>
+    <section class="panel">
+      <h2>Preferences</h2>
+      <label class="field"><span>Timezone</span>
+        <input id="timezone" type="text" placeholder="UTC" />
+      </label>
+      <label class="field"><span>Default retention (days)</span>
+        <input id="retention" type="number" min="1" max="10000" />
+      </label>
+      <div class="form-actions">
+        <button id="save-prefs" class="primary">Save preferences</button>
+        <span id="prefs-status" class="muted"></span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Purge published posts</h2>
+      <p class="muted">Deletes <strong>published</strong> posts whose scheduled time is older than the retention threshold. Idempotent. Every run is recorded in the audit log below.</p>
+      <label class="field"><span>Override retention for this purge (optional)</span>
+        <input id="purge-days" type="number" min="1" max="10000" placeholder="leave blank to use default" />
+      </label>
+      <div class="form-actions">
+        <button id="preview-purge" class="ghost">Preview</button>
+        <button id="run-purge" class="danger">Run purge</button>
+        <span id="purge-status" class="muted"></span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Audit log</h2>
+      <p class="muted">Most recent destructive actions.</p>
+      <div id="audit"></div>
+    </section>
+  </main>
+
+  <div id="login" class="login" hidden>
+    <form id="login-form" class="login-card">
+      <h1>JACK Settings</h1>
+      <input type="password" id="login-password" required autofocus />
+      <button type="submit" class="primary">Sign in</button>
+      <p id="login-error" class="error" role="alert"></p>
+    </form>
+  </div>
+  <div id="toast" class="toast" hidden></div>
+</div>
+<script src="/settings.js" defer></script>
+</body>
+</html>

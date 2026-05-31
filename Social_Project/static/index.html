@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JACK Social Scheduler</title>
+<link rel="stylesheet" href="/styles.css" />
+<link rel="icon" href="data:," />
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">J</span>
+      <span class="brand-text">JACK Social Scheduler</span>
+    </div>
+    <nav class="actions">
+      <a href="/studio" class="ghost" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);text-decoration:none;">Studio</a>
+      <a href="/repurpose" class="ghost" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);text-decoration:none;">Repurpose</a>
+      <a href="/calendar" class="ghost" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);text-decoration:none;">Calendar</a>
+      <a href="/analytics" class="ghost" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);text-decoration:none;">Analytics</a>
+      <a href="/settings" class="ghost" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);text-decoration:none;">Settings</a>
+      <span id="version" class="version"></span>
+      <button id="logout-btn" class="ghost" hidden>Sign out</button>
+    </nav>
+  </header>
+
+  <main class="main" hidden>
+    <section id="alerts-panel" class="panel alerts-panel" hidden>
+      <h2>Alerts</h2>
+      <div id="alerts-list"></div>
+    </section>
+
+    <section class="panel platforms">
+      <h2>Connections</h2>
+      <p class="muted">Connect each platform once. Tokens auto-refresh.</p>
+      <div id="platforms-grid" class="platforms-grid"></div>
+    </section>
+
+    <section id="drafts-panel" class="panel" hidden>
+      <h2>Drafts</h2>
+      <p class="muted">Substack-sourced drafts in the review queue. Pick a quote, then promote to Studio to schedule.</p>
+      <div id="drafts-list"></div>
+    </section>
+
+    <section class="panel compose">
+      <h2 id="compose-title">New scheduled post</h2>
+      <form id="post-form" autocomplete="off">
+        <input type="hidden" id="post-id" />
+
+        <label class="field">
+          <span>Caption</span>
+          <textarea id="caption" rows="5" maxlength="2200" required
+                    placeholder="Write a caption…"></textarea>
+          <small class="counter"><span id="caption-count">0</span> / <span id="caption-max">2200</span></small>
+        </label>
+
+        <fieldset class="field platforms-pick">
+          <legend>Platforms</legend>
+          <label><input type="checkbox" name="platforms" value="threads" /> Threads</label>
+          <label><input type="checkbox" name="platforms" value="instagram" /> Instagram</label>
+          <label><input type="checkbox" name="platforms" value="tiktok" /> TikTok <span class="muted">(drafts)</span></label>
+        </fieldset>
+
+        <div id="account-selectors"></div>
+
+        <div class="row two">
+          <label class="field">
+            <span>Media URL <small class="muted">(image or video, publicly reachable)</small></span>
+            <input id="media-url" type="url" placeholder="https://…/file.mp4" />
+          </label>
+          <label class="field">
+            <span>Media type</span>
+            <select id="media-type">
+              <option value="">Auto</option>
+              <option value="IMAGE">Image</option>
+              <option value="VIDEO">Video</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="row two">
+          <label class="field">
+            <span>Date</span>
+            <input id="scheduled-date" type="date" required />
+          </label>
+          <label class="field">
+            <span>Time <small class="muted" id="tz-hint"></small></span>
+            <input id="scheduled-time" type="time" step="60" required />
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="primary" id="submit-btn">Schedule post</button>
+          <button type="button" class="ghost" id="reset-btn" hidden>Cancel edit</button>
+          <span id="form-error" class="error" role="alert"></span>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel queue">
+      <div class="queue-head">
+        <h2>Queue</h2>
+        <div class="filters">
+          <button data-filter="all" class="chip active">All</button>
+          <button data-filter="pending" class="chip">Pending</button>
+          <button data-filter="processing" class="chip">Processing</button>
+          <button data-filter="published" class="chip">Published</button>
+          <button data-filter="failed" class="chip">Failed</button>
+        </div>
+      </div>
+      <div id="posts-list" class="posts-list"></div>
+      <div id="posts-empty" class="empty" hidden>Nothing scheduled yet.</div>
+    </section>
+  </main>
+
+  <div id="login" class="login" hidden>
+    <form id="login-form" class="login-card">
+      <h1>JACK Social Scheduler</h1>
+      <p class="muted">Enter the admin password to continue.</p>
+      <input type="password" id="login-password" required autofocus />
+      <button type="submit" class="primary">Sign in</button>
+      <p id="login-error" class="error" role="alert"></p>
+    </form>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+</div>
+
+<script src="/app.js" defer></script>
+</body>
+</html>

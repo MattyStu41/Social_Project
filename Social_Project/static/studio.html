@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Studio — JACK Social Scheduler</title>
+<link rel="stylesheet" href="/styles.css" />
+<link rel="stylesheet" href="/studio.css" />
+<link rel="icon" href="data:," />
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">J</span>
+      <span class="brand-text">JACK Studio</span>
+    </div>
+    <nav class="actions">
+      <a href="/" class="ghost" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);text-decoration:none;">Dashboard</a>
+      <span id="version" class="version"></span>
+      <button id="logout-btn" class="ghost" hidden>Sign out</button>
+    </nav>
+  </header>
+
+  <main class="main studio-main" hidden>
+    <section class="panel">
+      <h2>Compose</h2>
+      <p class="muted">Write a base caption once. Tailor it per platform with overrides; per-platform limits are enforced before scheduling.</p>
+
+      <form id="studio-form" autocomplete="off">
+        <label class="field">
+          <span>Base caption</span>
+          <textarea id="caption" rows="5" maxlength="2200" required placeholder="The single source of truth for your post…"></textarea>
+          <small class="counter"><span id="caption-count">0</span> chars · <span id="caption-tags">0</span> hashtag(s)</small>
+        </label>
+
+        <div class="row two">
+          <label class="field">
+            <span>Base media URL <small class="muted">(optional)</small></span>
+            <input id="media-url" type="url" placeholder="https://…/file.mp4" />
+          </label>
+          <label class="field">
+            <span>Base media type</span>
+            <select id="media-type">
+              <option value="">Auto</option>
+              <option value="IMAGE">Image</option>
+              <option value="VIDEO">Video</option>
+            </select>
+          </label>
+        </div>
+
+        <fieldset class="field">
+          <legend>Target platforms</legend>
+          <div class="platforms-pick">
+            <label><input type="checkbox" name="platforms" value="threads" /> Threads</label>
+            <label><input type="checkbox" name="platforms" value="instagram" /> Instagram</label>
+            <label><input type="checkbox" name="platforms" value="tiktok" /> TikTok <span class="muted">(drafts — caption set in-app)</span></label>
+          </div>
+        </fieldset>
+
+        <section id="overrides-panel">
+          <h3>Per-platform overrides</h3>
+          <p class="muted">Click a platform above to reveal its override block. Empty fields fall back to the base.</p>
+          <div id="overrides-container"></div>
+        </section>
+
+        <div class="row two">
+          <label class="field">
+            <span>Date</span>
+            <input id="scheduled-date" type="date" required />
+          </label>
+          <label class="field">
+            <span>Time <small class="muted" id="tz-hint"></small></span>
+            <input id="scheduled-time" type="time" step="60" required />
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="primary" id="submit-btn">Schedule</button>
+          <a href="/" class="ghost" style="padding:9px 14px;border-radius:8px;border:1px solid var(--border);text-decoration:none;">Cancel</a>
+          <span id="form-error" class="error" role="alert"></span>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <div id="login" class="login" hidden>
+    <form id="login-form" class="login-card">
+      <h1>JACK Studio</h1>
+      <p class="muted">Sign in to compose.</p>
+      <input type="password" id="login-password" required autofocus />
+      <button type="submit" class="primary">Sign in</button>
+      <p id="login-error" class="error" role="alert"></p>
+    </form>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+</div>
+
+<script src="/studio.js" defer></script>
+</body>
+</html>

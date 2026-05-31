@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Calendar — JACK Social Scheduler</title>
+<link rel="stylesheet" href="/styles.css" />
+<link rel="stylesheet" href="/calendar.css" />
+<link rel="icon" href="data:," />
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">J</span>
+      <span class="brand-text">JACK Calendar</span>
+    </div>
+    <nav class="actions">
+      <a href="/" class="ghost" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);text-decoration:none;">Dashboard</a>
+      <a href="/studio" class="ghost" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);text-decoration:none;">Studio</a>
+      <a href="/repurpose" class="ghost" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);text-decoration:none;">Repurpose</a>
+      <button id="logout-btn" class="ghost" hidden>Sign out</button>
+    </nav>
+  </header>
+
+  <main class="main calendar-main" hidden>
+    <section class="panel">
+      <div class="cal-toolbar">
+        <button id="prev-month" class="ghost">‹ Prev</button>
+        <h2 id="month-label">—</h2>
+        <button id="next-month" class="ghost">Next ›</button>
+        <div class="tz-block">
+          <label>Timezone:
+            <input id="tz-input" type="text" size="20" placeholder="UTC" />
+          </label>
+          <button id="save-tz" class="ghost">Save</button>
+        </div>
+      </div>
+      <div class="cal-grid-head">
+        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+      </div>
+      <div id="cal-grid" class="cal-grid"></div>
+    </section>
+
+    <section class="panel" id="day-panel" hidden>
+      <h2 id="day-label"></h2>
+      <div id="day-posts"></div>
+    </section>
+  </main>
+
+  <div id="login" class="login" hidden>
+    <form id="login-form" class="login-card">
+      <h1>JACK Calendar</h1>
+      <p class="muted">Sign in to view the calendar.</p>
+      <input type="password" id="login-password" required autofocus />
+      <button type="submit" class="primary">Sign in</button>
+      <p id="login-error" class="error" role="alert"></p>
+    </form>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+</div>
+
+<script src="/calendar.js" defer></script>
+</body>
+</html>

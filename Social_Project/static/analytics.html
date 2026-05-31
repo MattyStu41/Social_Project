@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Analytics — JACK Social Scheduler</title>
+<link rel="stylesheet" href="/styles.css" />
+<link rel="stylesheet" href="/studio.css" />
+<link rel="icon" href="data:," />
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">J</span>
+      <span class="brand-text">JACK Analytics</span>
+    </div>
+    <nav class="actions">
+      <a href="/" class="ghost" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);text-decoration:none;">Dashboard</a>
+      <a href="/calendar" class="ghost" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);text-decoration:none;">Calendar</a>
+      <button id="logout-btn" class="ghost" hidden>Sign out</button>
+    </nav>
+  </header>
+
+  <main class="main studio-main" hidden>
+    <section class="panel">
+      <h2>Weekly summary</h2>
+      <div id="weekly"></div>
+    </section>
+    <section class="panel">
+      <h2>Per-post samples</h2>
+      <p class="muted">Samples are collected at +1h, +24h, +72h, and +7d after publish. TikTok engagement is not available via the Content Posting API.</p>
+      <div id="per-post"></div>
+    </section>
+  </main>
+
+  <div id="login" class="login" hidden>
+    <form id="login-form" class="login-card">
+      <h1>JACK Analytics</h1>
+      <input type="password" id="login-password" required autofocus />
+      <button type="submit" class="primary">Sign in</button>
+      <p id="login-error" class="error" role="alert"></p>
+    </form>
+  </div>
+  <div id="toast" class="toast" hidden></div>
+</div>
+<script src="/analytics.js" defer></script>
+</body>
+</html>
