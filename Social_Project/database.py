@@ -1,14 +1,15 @@
 """
-Async SQLAlchemy engine + session factory bound to Neon Postgres.
+Async SQLAlchemy engine + session factory.
 
-Neon idles connections aggressively, so pool_pre_ping is on and pool_recycle
-keeps connections fresh. Statement-level timeouts prevent a hung Meta call
-from holding a pool slot forever.
+Supports both Supabase Postgres and Neon Postgres. Connection pooling and
+statement-level timeouts prevent a hung platform API call from holding a
+pool slot forever.
 """
 
 from __future__ import annotations
 
 from collections.abc import AsyncIterator
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
@@ -17,29 +18,36 @@ from config import settings
 
 if not settings.database_url:
     raise RuntimeError(
-        "DATABASE_URL is not set. Point it at your Neon Postgres instance "
-        "(postgresql://USER:PASS@HOST/DB?sslmode=require)."
+        "DATABASE_URL is not set. Point it at your Supabase or Neon Postgres instance."
     )
 
 
-def _engine_kwargs(url: str) -> dict:
-    """Postgres gets the production pool + SSL. SQLite (tests) does not."""
+def _engine_kwargs(url: str) -> dict[str, Any]:
+    """Postgres gets production pool settings. SQLite (tests) does not."""
     if url.startswith("sqlite"):
         return {"echo": False, "future": True}
-    return {
+
+    # Supabase/Postgres connection settings
+    kwargs: dict[str, Any] = {
         "echo": False,
         "pool_pre_ping": True,
         "pool_recycle": 1800,
         "pool_size": 5,
         "max_overflow": 5,
-        "connect_args": {
+    }
+
+    # Supabase pools already handle SSL, and connection strings include parameters
+    # Only add server_settings for non-Supabase Postgres
+    if "supabase" not in url.lower():
+        kwargs["connect_args"] = {
             "server_settings": {
                 "application_name": "jack-social-scheduler",
                 "statement_timeout": "30000",
             },
             "ssl": True,
-        },
-    }
+        }
+
+    return kwargs
 
 
 engine = create_async_engine(settings.database_url, **_engine_kwargs(settings.database_url))
@@ -52,13 +60,11 @@ class Base(DeclarativeBase):
 
 
 async def init_schema() -> None:
-    """Apply Alembic migrations on boot. On a brand-new DB, this also creates
-    the tables (migration 001 is the baseline). On an existing DB whose tables
-    were created by the pre-Alembic create_all path, stamp it head first using
-    `alembic stamp head` — see docs/DEPLOY_REPLIT.md.
+    """Initialize database schema.
 
-    Falls back to Base.metadata.create_all when running in test mode against
-    SQLite — Alembic is overkill for in-memory test databases.
+    For Supabase: Schema is managed via Supabase migrations, so skip Alembic.
+    For SQLite (tests): Use Base.metadata.create_all.
+    For other Postgres (Neon/managed): Use Alembic migrations.
     """
     from models import PlatformToken, ScheduledPost  # noqa: F401  (registers metadata)
 
@@ -67,18 +73,19 @@ async def init_schema() -> None:
             await conn.run_sync(Base.metadata.create_all)
         return
 
-    # Production path: run Alembic upgrade head in a thread (Alembic is sync).
+    # Supabase: migrations are handled externally via Supabase dashboard
+    if "supabase" in settings.database_url.lower():
+        return
+
+    # Other Postgres (Neon, etc.): run Alembic migrations
     import asyncio
 
-    from alembic import command
     from alembic.config import Config
+
+    from alembic import command
 
     def _upgrade() -> None:
         cfg = Config("alembic.ini")
-        # ConfigParser treats "%" as interpolation syntax, so a DB URL whose
-        # password contains a literal "%" would crash set_main_option. Escape
-        # it. (env.py reads the raw DATABASE_URL from os.environ anyway; this
-        # value is only the fallback.)
         cfg.set_main_option("sqlalchemy.url", settings.database_url.replace("%", "%%"))
         command.upgrade(cfg, "head")
 

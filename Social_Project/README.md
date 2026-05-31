@@ -11,8 +11,75 @@ no data shared with anyone else.
 - **Instagram** — image and Reels, fully auto-published (Business/Creator account linked to a Facebook Page).
 - **TikTok** — video pushed to your drafts (TikTok API caps unaudited apps to drafts; you finalise in the TikTok app).
 
-Built on FastAPI + SQLAlchemy 2 + asyncpg + APScheduler, designed for Neon
-Postgres, deployed on Replit Reserved VM (single long-running process).
+## Quick Start with Supabase
+
+**Recommended: Supabase** (managed Postgres with built-in auth, real-time, and storage).
+
+### 1. Create Supabase Project
+
+1. Go to [supabase.com](https://supabase.com) and create a new project
+2. Wait for the database to provision (~2 minutes)
+3. Go to **Project Settings → Database**
+4. Copy the connection string under **Connection string** → **URI**
+5. Paste into `.env` as `DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres`
+
+### 2. Generate Admin Credentials
+
+```bash
+# Generate password hash
+python scripts/hash_password.py
+
+# Generate session secret
+python -c "import secrets; print(secrets.token_urlsafe(64))"
+```
+
+Copy outputs to `.env` as `ADMIN_PASSWORD_HASH` and `SESSION_SECRET`.
+
+### 3. Create OAuth Apps
+
+**Meta (Threads + Instagram):**
+1. Go to [developers.facebook.com](https://developers.facebook.com)
+2. Create app → Business → Apps for Messenger or Instagram
+3. Add products: **Threads** and **Instagram Graph API**
+4. Copy App ID and App Secret to `.env`
+5. Add redirect URIs:
+   - `{BASE_URL}/api/auth/threads/callback`
+   - `{BASE_URL}/api/auth/instagram/callback`
+
+**TikTok:**
+1. Go to [developers.tiktok.com](https://developers.tiktok.com)
+2. Create app → Content Posting API
+3. Copy Client Key and Client Secret to `.env`
+4. Add redirect URI: `{BASE_URL}/api/auth/tiktok/callback`
+
+### 4. Install and Run
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# Database migrations are applied automatically on first run
+uvicorn main:app --reload
+
+# Open http://localhost:8000
+# Sign in with your admin password
+# Connect each platform (Threads, Instagram, TikTok)
+# Schedule your first post!
+```
+
+### 5. Production Deployment
+
+See [docs/DEPLOY_REPLIT.md](docs/DEPLOY_REPLIT.md) for:
+- Replit Reserved VM (recommended for 24/7 publishing)
+- Environment variable configuration
+- OAuth redirect URI setup
+- First-run checklist
+
+**Important:** Free-tier Repls sleep when idle. Use Reserved VM for reliable scheduled publishing.
+
+Built on FastAPI + SQLAlchemy 2 + asyncpg + APScheduler, designed for **Supabase
+Postgres** (or Neon), deployed on Replit Reserved VM (single long-running process).
 
 ## Pages
 
@@ -41,8 +108,8 @@ Postgres, deployed on Replit Reserved VM (single long-running process).
                                     │  └─ admin            │
                                     └──┬─────────┬─────────┘
                                        │         │
-                                APScheduler   Neon Postgres
-                                  (in-proc)     (Alembic-managed)
+                                APScheduler   Supabase/Neon Postgres
+                                  (in-proc)     (Migration-managed)
                                        │
                               ┌────────┼─────────┐
                               ▼        ▼         ▼
@@ -67,7 +134,7 @@ Required:
 
 | Variable | Notes |
 |---|---|
-| `DATABASE_URL` | Neon Postgres connection string. JACK auto-rewrites `postgres://` → `postgresql+asyncpg://`. |
+| `DATABASE_URL` | **Supabase** or Neon Postgres connection string. Supabase: Get from Project Settings → Database. |
 | `BASE_URL` | Public URL, no trailing slash, scheme required (`http://` or `https://`). |
 | `ADMIN_PASSWORD_HASH` | bcrypt(12) hash from `python scripts/hash_password.py`. |
 | `SESSION_SECRET` | `python -c "import secrets; print(secrets.token_urlsafe(64))"`. Rotate to invalidate all sessions. |
